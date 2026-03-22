@@ -1,98 +1,291 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Coletor - Teste</title>
+    <title>Coletor - Com Tags e Busca</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
         .card {
             background: white;
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
-        input, textarea, select {
+        
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        input, select, textarea {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
         }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .tag-input {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .tag-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4c51bf;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tag-badge:hover {
+            background: #c7d2fe;
+        }
+        
+        .tag-badge.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tag-badge.remove {
+            background: #fee2e2;
+            color: #dc2626;
+            margin-left: 5px;
+        }
+        
         button {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: transform 0.2s;
         }
+        
         button:hover {
-            background: #2563eb;
+            transform: translateY(-2px);
         }
+        
         .item {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 15px 0;
         }
-        .delete {
+        
+        .item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .item-tipo {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 15px;
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .item-tipo.TEXTO { background: #dbeafe; color: #1e40af; }
+        .item-tipo.LINK { background: #dcfce7; color: #166534; }
+        .item-tipo.IDEIA { background: #fef3c7; color: #92400e; }
+        
+        .item-conteudo {
+            font-size: 16px;
+            color: #333;
+            margin: 8px 0;
+            word-break: break-word;
+        }
+        
+        .item-conteudo a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .item-conteudo a:hover {
+            text-decoration: underline;
+        }
+        
+        .item-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+        }
+        
+        .item-tag {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+        
+        .item-data {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        
+        .delete-btn {
             background: #ef4444;
-            margin-left: 10px;
+            padding: 5px 12px;
+            font-size: 12px;
         }
-        .delete:hover {
+        
+        .delete-btn:hover {
             background: #dc2626;
         }
-        small {
-            color: gray;
-            display: block;
-            margin-top: 5px;
+        
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+        }
+        
+        @media (max-width: 600px) {
+            .card {
+                padding: 15px;
+            }
+            .tag-input {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>📦 Coletor</h1>
-        <p>Salve suas ideias e links rapidamente</p>
-    </div>
-
-    <div class="card">
-        <h3>➕ Adicionar item</h3>
-        <input type="text" id="conteudo" placeholder="Digite um link, ideia ou anotação...">
-        <select id="tipo">
-            <option value="TEXTO">📝 Texto</option>
-            <option value="LINK">🔗 Link</option>
-            <option value="IDEIA">💡 Ideia</option>
-        </select>
-        <button onclick="salvarItem()">Salvar</button>
-    </div>
-
-    <div class="card">
-        <h3>📋 Seus itens</h3>
-        <div id="lista"></div>
+    <div class="container">
+        <div class="card">
+            <h1>📦 Coletor Pro</h1>
+            <p class="subtitle">Organize suas ideias com tags e buscas</p>
+        </div>
+        
+        <div class="card">
+            <h3>➕ Adicionar item</h3>
+            <div class="input-group">
+                <input type="text" id="conteudo" placeholder="Digite um link, ideia ou anotação...">
+            </div>
+            <div class="input-group">
+                <select id="tipo">
+                    <option value="TEXTO">📝 Texto</option>
+                    <option value="LINK">🔗 Link</option>
+                    <option value="IDEIA">💡 Ideia</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label style="font-size: 12px; color: #666;">Tags (separadas por vírgula):</label>
+                <input type="text" id="tags" placeholder="ex: trabalho, importante, ler depois">
+            </div>
+            <button onclick="salvarItem()">Salvar</button>
+        </div>
+        
+        <div class="card">
+            <h3>🔍 Buscar e filtrar</h3>
+            <div class="search-bar">
+                <input type="text" id="busca" placeholder="Buscar por palavra..." onkeyup="carregarItens()">
+            </div>
+            <div id="filtro-tags" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;"></div>
+        </div>
+        
+        <div class="card">
+            <h3>📋 Seus itens</h3>
+            <div id="lista"></div>
+        </div>
     </div>
 
     <script>
-        const API = 'http://localhost:5000/api';
+        const API = window.location.origin + '/api';
         
         async function carregarItens() {
-            const response = await fetch(`${API}/items`);
+            const busca = document.getElementById('busca').value;
+            const tagFiltro = document.getElementById('filtro-tags').dataset.selectedTag || '';
+            
+            let url = `${API}/items`;
+            const params = [];
+            if (busca) params.push(`search=${encodeURIComponent(busca)}`);
+            if (tagFiltro) params.push(`tag=${encodeURIComponent(tagFiltro)}`);
+            if (params.length) url += '?' + params.join('&');
+            
+            const response = await fetch(url);
             const data = await response.json();
             const lista = document.getElementById('lista');
             
             if (data.itens.length === 0) {
-                lista.innerHTML = '<p style="color: gray;">Nenhum item ainda. Adicione algo!</p>';
+                lista.innerHTML = '<div class="empty-state">📭 Nenhum item encontrado</div>';
                 return;
             }
             
             lista.innerHTML = data.itens.map(item => `
                 <div class="item">
-                    <strong>${item.tipo}</strong> - ${item.conteudo}
-                    <small>${new Date(item.criadoEm).toLocaleString()}</small>
-                    <button class="delete" onclick="deletarItem(${item.id})">Excluir</button>
+                    <div class="item-header">
+                        <span class="item-tipo ${item.tipo}">${item.tipo}</span>
+                        <button class="delete-btn" onclick="deletarItem(${item.id})">Excluir</button>
+                    </div>
+                    <div class="item-conteudo">
+                        ${item.tipo === 'LINK' ? `<a href="${item.conteudo}" target="_blank">${item.conteudo}</a>` : item.conteudo}
+                    </div>
+                    <div class="item-tags">
+                        ${item.tags && item.tags.length ? item.tags.map(tag => `<span class="item-tag">#${tag}</span>`).join('') : '<span style="font-size: 11px; color: #ccc;">sem tags</span>'}
+                    </div>
+                    <div class="item-data">
+                        ${new Date(item.criadoEm).toLocaleString()}
+                    </div>
                 </div>
             `).join('');
         }
@@ -100,6 +293,8 @@
         async function salvarItem() {
             const conteudo = document.getElementById('conteudo').value;
             const tipo = document.getElementById('tipo').value;
+            const tagsInput = document.getElementById('tags').value;
+            const tags = tagsInput.split(',').map(t => t.trim()).filter(t => t);
             
             if (!conteudo) {
                 alert('Digite algo!');
@@ -109,20 +304,52 @@
             await fetch(`${API}/items`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ conteudo, tipo })
+                body: JSON.stringify({ conteudo, tipo, tags })
             });
             
             document.getElementById('conteudo').value = '';
+            document.getElementById('tags').value = '';
             carregarItens();
+            carregarTagsFiltro();
         }
         
         async function deletarItem(id) {
+            if (!confirm('Tem certeza?')) return;
             await fetch(`${API}/items/${id}`, { method: 'DELETE' });
             carregarItens();
+            carregarTagsFiltro();
+        }
+        
+        async function carregarTagsFiltro() {
+            const response = await fetch(`${API}/items`);
+            const data = await response.json();
+            
+            const todasTags = new Set();
+            data.itens.forEach(item => {
+                item.tags?.forEach(tag => todasTags.add(tag));
+            });
+            
+            const container = document.getElementById('filtro-tags');
+            const selectedTag = container.dataset.selectedTag || '';
+            
+            container.innerHTML = `
+                <button class="tag-badge ${!selectedTag ? 'active' : ''}" onclick="filtrarPorTag('')">Todos</button>
+                ${Array.from(todasTags).map(tag => `
+                    <button class="tag-badge ${selectedTag === tag ? 'active' : ''}" onclick="filtrarPorTag('${tag}')">#${tag}</button>
+                `).join('')}
+            `;
+        }
+        
+        function filtrarPorTag(tag) {
+            const container = document.getElementById('filtro-tags');
+            container.dataset.selectedTag = tag;
+            carregarItens();
+            carregarTagsFiltro();
         }
         
         carregarItens();
-        setInterval(carregarItens, 2000);
+        carregarTagsFiltro();
+        setInterval(carregarItens, 3000);
     </script>
 </body>
 </html>
